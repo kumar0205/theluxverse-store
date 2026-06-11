@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import Navbar from '@/components/lux/Navbar';
 import Footer from '@/components/lux/Footer';
 import ArrowIcon from '@/components/lux/ArrowIcon';
@@ -41,9 +41,9 @@ const PRODUCT_MAP = {
   },
 };
 
-// Resolve product param → config entry (default to creator if unknown)
+// Resolve product param → config entry (returns null if unknown)
 function resolveProduct(raw) {
-  if (!raw) return PRODUCT_MAP.creator;
+  if (!raw) return null;
   const key = raw.toLowerCase();
   // exact match
   if (PRODUCT_MAP[key]) return PRODUCT_MAP[key];
@@ -51,7 +51,7 @@ function resolveProduct(raw) {
   for (const [k, v] of Object.entries(PRODUCT_MAP)) {
     if (key.includes(k)) return v;
   }
-  return PRODUCT_MAP.creator;
+  return null;
 }
 
 export default function ThankYou() {
@@ -60,15 +60,20 @@ export default function ThankYou() {
   const { loading, product: verifiedProduct } = usePaymentGuard();
 
   const [searchParams] = useSearchParams();
-  // URL param only used as a display hint after server has verified the purchase.
-  const productParam = searchParams.get('product') || searchParams.get('p') || searchParams.get('vault') || '';
+  const navigate = useNavigate();
 
   // Priority 3 — resolve from VERIFIED product returned by server.
-  // Falls back to URL param only as a display label (server already verified it).
-  const activeProduct = resolveProduct(verifiedProduct || productParam);
+  const activeProduct = resolveProduct(verifiedProduct);
+
+  // If loading is finished and we don't have a verified valid product, redirect to home
+  React.useEffect(() => {
+    if (!loading && !activeProduct) {
+      navigate('/', { replace: true });
+    }
+  }, [loading, activeProduct, navigate]);
 
   // ── Loading screen while /api/verify-payment is in flight ──────────────────
-  if (loading) {
+  if (loading || !activeProduct) {
     return (
       <div style={{ background: '#050505', minHeight: '100vh', display: 'flex', flexDirection: 'column', padding: '24px', gap: '24px' }}>
         {/* Navbar skeleton */}
