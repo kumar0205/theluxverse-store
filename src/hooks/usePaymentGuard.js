@@ -102,6 +102,48 @@ export default function usePaymentGuard() {
 
   useEffect(() => {
     async function guard() {
+      // ── Temporary Bypass Flow ─────────────────────────────────────────────
+      if (BYPASS_VERIFY_PAYMENT) {
+        const productParam =
+          searchParams.get('product') ||
+          searchParams.get('p') ||
+          searchParams.get('vault');
+
+        if (productParam) {
+          if (paymentId) {
+            cachePaymentResult(paymentId, productParam);
+          }
+          writeGeneralSession(productParam);
+          setProduct(productParam);
+          setLoading(false);
+          return;
+        }
+
+        // No product in URL: check if paymentId is in URL and has cached product
+        if (paymentId) {
+          const cachedProduct = getCachedProduct(paymentId);
+          if (cachedProduct) {
+            setProduct(cachedProduct);
+            setLoading(false);
+            return;
+          }
+        }
+
+        // No product in URL, no cached paymentId: check general session
+        if (isGeneralSessionValid()) {
+          const cached = readGeneralSession();
+          setProduct(cached.product ?? null);
+          setLoading(false);
+          return;
+        }
+
+        // Otherwise redirect home
+        clearGeneralSession();
+        navigate('/', { replace: true });
+        return;
+      }
+
+      // ── Strict Verification Flow (BYPASS_VERIFY_PAYMENT = false) ──────────
       // ── 1. No paymentId in URL — try general session (tab refresh) ────────
       if (!paymentId) {
         if (isGeneralSessionValid()) {
@@ -126,19 +168,6 @@ export default function usePaymentGuard() {
 
       // ── 3. Cache miss — call the server-side Vercel Function ──────────────
       //    React → /api/verify-payment → Razorpay (secrets never in browser)
-      if (BYPASS_VERIFY_PAYMENT) {
-        const productParam =
-          searchParams.get('product') ||
-          searchParams.get('p') ||
-          searchParams.get('vault') ||
-          'creator';
-        cachePaymentResult(paymentId, productParam);
-        writeGeneralSession(productParam);
-        setProduct(productParam);
-        setLoading(false);
-        return;
-      }
-
       try {
         const res  = await fetch('/api/verify-payment', {
           method:  'POST',
