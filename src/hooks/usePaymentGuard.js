@@ -19,6 +19,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
+// TEMPORARY:
+// Remove bypass after Razorpay API keys are approved.
+const BYPASS_VERIFY_PAYMENT = import.meta.env.VITE_BYPASS_VERIFY === 'true';
+
 const SESSION_TTL  = 30 * 60 * 1000; // 30 minutes
 const SESSION_GENERAL_KEY = 'lx_payment_ok'; // fallback for tab refreshes without paymentId in URL
 
@@ -122,6 +126,19 @@ export default function usePaymentGuard() {
 
       // ── 3. Cache miss — call the server-side Vercel Function ──────────────
       //    React → /api/verify-payment → Razorpay (secrets never in browser)
+      if (BYPASS_VERIFY_PAYMENT) {
+        const productParam =
+          searchParams.get('product') ||
+          searchParams.get('p') ||
+          searchParams.get('vault') ||
+          'creator';
+        cachePaymentResult(paymentId, productParam);
+        writeGeneralSession(productParam);
+        setProduct(productParam);
+        setLoading(false);
+        return;
+      }
+
       try {
         const res  = await fetch('/api/verify-payment', {
           method:  'POST',
@@ -159,7 +176,7 @@ export default function usePaymentGuard() {
     }
 
     guard();
-  }, [paymentId, navigate]);
+  }, [paymentId, navigate, searchParams]);
 
   return { loading, product };
 }
