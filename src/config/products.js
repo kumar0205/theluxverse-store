@@ -15,7 +15,7 @@ export const PRODUCTS = {
     name: 'CREATOR VAULT',
     price: '₹699',
     originalPrice: '₹999',
-    url: 'https://pages.razorpay.com/pl_Sza2nPP0wJZMRv/view',
+    url: 'https://rzp.io/rzp/PrLJDeP',
     driveUrl: 'https://drive.google.com/drive/folders/1qn-9_fDNSMkQZyf_DUDrfVemBusfybzA?usp=drive_link',
     tagline: 'Get started with the essential courses & AI templates.',
     badge: 'BASIC',
@@ -29,7 +29,7 @@ export const PRODUCTS = {
     name: 'FULL VAULT',
     price: '₹999',
     originalPrice: '₹1499',
-    url: 'https://pages.razorpay.com/pl_Szldx0jjvWHHPJ/view',
+    url: 'https://rzp.io/rzp/AQz6B4qM',
     driveUrl: 'https://drive.google.com/drive/folders/1f14R0NjJLBc263fWQD0nE0A-Yn287x7u?usp=drive_link',
     tagline: 'Unlock the ultimate goldmine with all content, courses & templates.',
     badge: 'RECOMMENDED',
@@ -44,7 +44,7 @@ export const PRODUCTS = {
     price: '₹1,299',
     originalPrice: '₹21,493',
     globalPrice: '$25',
-    url: 'https://pages.razorpay.com/pl_SzllHrSVxlCug8/view',
+    url: 'https://rzp.io/rzp/fTawOlRo',
   }
 };
 
