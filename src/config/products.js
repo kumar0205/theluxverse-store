@@ -15,12 +15,12 @@ export const PRODUCTS = {
     name: 'CREATOR VAULT',
     price: '₹699',
     originalPrice: '₹999',
-    url: 'https://rzp.io/rzp/PrLJDeP',
+    url: 'https://rzp.io/rzp/creatorvault',
     driveUrl: 'https://drive.google.com/drive/folders/1qn-9_fDNSMkQZyf_DUDrfVemBusfybzA?usp=drive_link',
     tagline: 'Get started with the essential courses & AI templates.',
     badge: 'BASIC',
     features: ['Ebooks Pack', 'Digital Products Bundle', '1000+ Courses', '15K+ AI Agent Templates', 'Resell rights'],
-    missNote: 'No 15,000+ Reels',
+    missNote: 'No 15k+ Reels',
     highlighted: false
   },
 
@@ -29,11 +29,11 @@ export const PRODUCTS = {
     name: 'FULL VAULT',
     price: '₹999',
     originalPrice: '₹1499',
-    url: 'https://rzp.io/rzp/AQz6B4qM',
+    url: 'https://rzp.io/rzp/fullvault',
     driveUrl: 'https://drive.google.com/drive/folders/1f14R0NjJLBc263fWQD0nE0A-Yn287x7u?usp=drive_link',
     tagline: 'Unlock the ultimate goldmine with all content, courses & templates.',
     badge: 'RECOMMENDED',
-    features: ['Ebooks Pack', 'Digital Products Bundle', '15,000+ Reels Pack', '1000+ Courses', '15K+ AI Agent Templates', 'Resell rights'],
+    features: ['Ebooks Pack', 'Digital Products Bundle', '15k+ Reels Pack', '1000+ Courses', '15K+ AI Agent Templates', 'Resell rights'],
     missNote: null,
     highlighted: true
   },
@@ -44,7 +44,7 @@ export const PRODUCTS = {
     price: '₹1,299',
     originalPrice: '₹21,493',
     globalPrice: '$25',
-    url: 'https://rzp.io/rzp/fTawOlRo',
+    url: 'https://rzp.io/rzp/fTawOIRo',
   }
 };
 

@@ -16,7 +16,7 @@ const FULL_FEATURES = [
   { label: 'Publish products and keep 100% of every sale', included: true },
   { label: 'Never run out of content ideas (15K+ reels)', included: true },
   { label: 'Build authority with 1,000+ premium courses', included: true },
-  { label: 'Automate with 15,000+ AI agent templates', included: true },
+  { label: 'Automate with 15k+ AI agent templates', included: true },
   { label: 'Grow a faceless audience from Day 1', included: true },
   { label: 'Sell reels and keep all profits', included: true },
 ];
@@ -26,7 +26,7 @@ const CREATOR_FEATURES = [
   { label: 'Publish products and keep 100% of every sale', included: true },
   { label: 'Never run out of content ideas (15K+ reels)', included: false, softNote: 'Available in Full Vault' },
   { label: 'Build authority with 1,000+ premium courses', included: true },
-  { label: 'Automate with 15,000+ AI agent templates', included: true },
+  { label: 'Automate with 15k+ AI agent templates', included: true },
   { label: 'Grow a faceless audience from Day 1', included: false, softNote: 'Available in Full Vault' },
   { label: 'Sell reels and keep all profits', included: false, softNote: 'Available in Full Vault' },
 ];
@@ -360,7 +360,7 @@ export default function VaultPage() {
                   fontFamily: 'Inter, sans-serif', fontSize: '12px',
                   color: '#D4AF37', fontWeight: 700,
                 }}>
-                  Includes 15,000+ Reels Content Engine
+                  Includes 15k+ Reels Content Engine
                 </span>
               </div>
             </div>
@@ -370,7 +370,7 @@ export default function VaultPage() {
               fontFamily: 'Inter, sans-serif', fontSize: '13.5px',
               color: '#8E8E8E', lineHeight: 1.6, margin: '12px 0 20px',
             }}>
-              Unlock everything: all courses, agent templates, ebooks, resell rights, plus the viral 15,000+ reels content engine.
+              Unlock everything: all courses, agent templates, ebooks, resell rights, plus the viral 15k+ reels content engine.
             </p>
 
             {/* #5 — keep gold CTA, make it larger */}
@@ -561,10 +561,10 @@ export default function VaultPage() {
             { name: 'DFY Ebooks & Guides Pack', creator: true, full: true, launchpad: true },
             { name: 'Digital Products Bundle', creator: true, full: true, launchpad: true },
             { name: '1,000+ Premium Courses', creator: true, full: true, launchpad: true },
-            { name: '15,000+ AI Agent Templates', creator: true, full: true, launchpad: true },
+            { name: '15k+ AI Agent Templates', creator: true, full: true, launchpad: true },
             { name: 'Master Resell Rights (MRR)', creator: true, full: true, launchpad: true },
             { name: 'Keep 100% of Every Sale', creator: true, full: true, launchpad: true },
-            { name: '15,000+ Ready-made Reels Pack', creator: false, full: true, launchpad: true, highlightRow: true },
+            { name: '15k+ Ready-made Reels Pack', creator: false, full: true, launchpad: true, highlightRow: true },
             { name: 'Caption Swipe File (100+)', creator: false, full: true, launchpad: true, highlightRow: true },
             { name: 'Step-by-Step Training Roadmap', creator: false, full: false, launchpad: true },
             { name: 'Lifetime Updates & New Additions', creator: false, full: false, launchpad: true },

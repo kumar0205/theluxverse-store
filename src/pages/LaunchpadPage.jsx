@@ -363,10 +363,10 @@ export default function LaunchpadPage() {
                       <rect x="1.5" y="11.5" width="14" height="11" rx="2" />
                       <path d="M15.5 14.5L22.5 11.5V22.5L15.5 19.5Z" />
                     </svg>
-                    <span>Grow Your Audience (15,000+ Reels)</span>
+                    <span>Grow Your Audience</span>
                   </h3>
                   <ul style={{ listStyleType: 'none', paddingLeft: 0, color: '#8E8E8E', fontFamily: 'Inter, sans-serif', fontSize: '15.5px', lineHeight: 1.8, marginBottom: 16, display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <li style={{ display: 'flex', gap: '8px', alignItems: 'center' }}><span style={{ color: '#D4AF37' }}>•</span> <span>Download ready-made content from our 15,000+ library</span></li>
+                    <li style={{ display: 'flex', gap: '8px', alignItems: 'center' }}><span style={{ color: '#D4AF37' }}>•</span> <span>Download ready-made content from our content library</span></li>
                     <li style={{ display: 'flex', gap: '8px', alignItems: 'center' }}><span style={{ color: '#D4AF37' }}>•</span> <span>Upload daily to your account to trigger growth algorithms</span></li>
                     <li style={{ display: 'flex', gap: '8px', alignItems: 'center' }}><span style={{ color: '#D4AF37' }}>•</span> <span>No editing or filming required — 100% faceless format</span></li>
                   </ul>
@@ -383,7 +383,7 @@ export default function LaunchpadPage() {
                     fontFamily: 'Inter, sans-serif',
                     boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
                   }}>
-                    <span>What you get : 15,000+ Ready-Made Reels</span>
+                    <span>What you get : 15k+ Ready-Made Reels</span>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: '8px', flexShrink: 0 }}>
                       <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>

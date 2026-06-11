@@ -28,7 +28,7 @@ const COMPARISON = [
   { feature: 'Resell Rights', creator: true, full: true },
   { feature: '1000+ Premium Courses', creator: true, full: true },
   { feature: '15K+ AI Agent Templates', creator: true, full: true },
-  { feature: '15,000+ Reels Pack', creator: false, full: true },
+  { feature: '15k+ Reels Pack', creator: false, full: true },
   { feature: 'Caption Swipe File (100+)', creator: false, full: true },
 ];
 
@@ -80,7 +80,7 @@ export default function CreatorVault() {
           ₹699
         </div>
         <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 'clamp(15px, 2vw, 18px)', color: '#8E8E8E', maxWidth: 520, lineHeight: 1.7, marginBottom: 36 }}>
-          1,000+ premium courses, 15,000+ AI templates, and hundreds of ready-to-sell ebooks. Built for creators who want to learn and earn — without showing their face.
+          1,000+ premium courses, 15k+ AI templates, and hundreds of ready-to-sell ebooks. Built for creators who want to learn and earn — without showing their face.
         </p>
         <a href={REPLACE_RAZORPAY_CREATOR} className="btn-gold pulse-glow" style={{ fontSize: '1.05rem' }}>
           Buy Creator Vault for ₹699 <ArrowIcon />
@@ -125,7 +125,7 @@ export default function CreatorVault() {
             },
             {
               icon: <div style={{ flexShrink: 0, width: 44, height: 44, borderRadius: 8, background: 'linear-gradient(135deg, #D4AF37, #F9E498)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Bebas Neue, sans-serif', fontSize: '1.4rem', color: '#050505' }}>AI</div>,
-              title: '15,000+ AI Agent Templates',
+              title: '15k+ AI Agent Templates',
               desc: 'Ready-made AI automation templates for ChatGPT, Claude, and other AI tools. The hottest category to sell right now.',
               perfect: 'Productivity, freelancing, selling to businesses',
               delay: '0.2s',

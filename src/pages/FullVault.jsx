@@ -17,7 +17,7 @@ const REPLACE_INSTAGRAM = GLOBAL_CONFIG.instagram;
 
 const PERSONAS = [
   'You want the complete digital products arsenal — nothing left out',
-  'You want a plug-and-post system for reels with 15,000+ ready-made videos',
+  'You want a plug-and-post system for reels with 15k+ ready-made videos',
   'You want to grow on Instagram without filming yourself daily',
   'You want the starter benefits PLUS a full content engine',
   'You\'re ready to build a serious digital income, not just side money',
@@ -28,7 +28,7 @@ const COMPARISON = [
   { feature: 'Resell Rights & License', full: true, launchpad: true },
   { feature: '1000+ Premium Courses', full: true, launchpad: true },
   { feature: '15K+ AI Agent Templates', full: true, launchpad: true },
-  { feature: '15,000+ Reels & swipe file', full: true, launchpad: true },
+  { feature: '15k+ Reels & swipe file', full: true, launchpad: true },
   { feature: 'Step-by-Step Video Training', full: false, launchpad: true },
   { feature: 'Discord Private Community', full: false, launchpad: true },
   { feature: 'Hand-Holding Support', full: false, launchpad: true },
@@ -117,7 +117,7 @@ export default function FullVault() {
               icon={
                 <div style={{ flexShrink: 0, width: 44, height: 44, borderRadius: 8, background: 'linear-gradient(135deg, #D4AF37, #F9E498)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Bebas Neue, sans-serif', fontSize: '1.4rem', color: '#050505' }}>R</div>
               }
-              title="15,000+ Reels + Content Library"
+              title="15k+ Reels + Content Library"
               desc="Faceless viral reels ready to post, plus the full content library with editing templates and 100+ caption swipe file."
               perfectFor="Instagram growth, daily posting, traffic generation"
               products={[...VAULT_PRODUCTS.reels, '100+ Caption Swipe File', 'Editing Templates']}
@@ -137,7 +137,7 @@ export default function FullVault() {
               icon={
                 <div style={{ flexShrink: 0, width: 44, height: 44, borderRadius: 8, background: 'linear-gradient(135deg, #D4AF37, #F9E498)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Bebas Neue, sans-serif', fontSize: '1.4rem', color: '#050505' }}>AI</div>
               }
-              title="15,000+ AI Agent Templates"
+              title="15k+ AI Agent Templates"
               desc="Ready-made AI automation templates for ChatGPT, Claude, and other AI tools. The hottest category to sell right now."
               perfectFor="Productivity, freelancing, selling to businesses"
               products={VAULT_PRODUCTS.aiTemplates}

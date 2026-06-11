@@ -4,6 +4,10 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import ScrollToTop from '@/components/ScrollToTop';
+import PrivacyPolicy from '@/pages/PrivacyPolicy';
+import TermsAndConditions from '@/pages/TermsAndConditions';
+import RefundPolicy from '@/pages/RefundPolicy';
+import Contact from '@/pages/Contact';
 
 // Lazy load pages
 const Home = lazy(() => import('@/pages/Home'));
@@ -120,6 +124,10 @@ function App() {
             <Route path="/creator-vault" element={<CreatorVault />} />
             <Route path="/full-vault" element={<FullVault />} />
             <Route path="/what-is-digital-product" element={<WhatIsDigitalProduct />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+            <Route path="/refund-policy" element={<RefundPolicy />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="*" element={<Home />} />
           </Routes>
         </Suspense>

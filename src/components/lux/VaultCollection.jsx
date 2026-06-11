@@ -57,7 +57,7 @@ const VAULT_CATEGORIES = [
     footer: 'Most people Buy Digital products. You can sell them, use them — or both ✅'
   },
   {
-    title: '🎞️ Mega 15,000+ Viral Reels Vault',
+    title: '🎞️ Mega 15k+ Viral Reels Vault',
     subtitle: '',
     subcategories: [
       {

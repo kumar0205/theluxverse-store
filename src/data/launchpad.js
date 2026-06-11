@@ -44,7 +44,7 @@ export const TOOLS_DATA = [
     image: "https://d1yei2z3i6k35z.cloudfront.net/11609799/6974c7fe1811c_content.mp4",
     isVideo: true,
     points: [
-      "<span class='text-[#D4AF37] font-semibold'>Never run out of content ideas again</span> with 15,000+ ready-made reels",
+      "<span class='text-[#D4AF37] font-semibold'>Never run out of content ideas again</span> with 15k+ ready-made reels",
       "Ready-made assets designed for <span class='text-white font-semibold'>fast viral reach</span>",
       "Build a massive faceless following <span class='text-white font-semibold'>without showing your face</span>"
     ]
@@ -185,7 +185,7 @@ export const PAIN_POINTS = [
 
 // ── Product preview cards (Visual Preview section) ──
 export const PRODUCT_PREVIEWS = [
-  { title: '15,000+ Ready-Made Reels', desc: 'Saves hundreds of hours searching for clips and shooting videos. Just download, post daily, and grow your audience.', img: reelsPackImg },
+  { title: '15k+ Ready-Made Reels', desc: 'Saves hundreds of hours searching for clips and shooting videos. Just download, post daily, and grow your audience.', img: reelsPackImg },
   { title: '1,000+ Premium Courses', desc: 'Skip years of trial and error. Learn high-income skills directly or resell them to build your brand instantly.', img: coursesImg },
   { title: '15k+ Ai Agent Templates', desc: 'Eliminates the need for expensive developers. Get plug-and-play templates to build and deploy systems in minutes.', img: templatesImg },
   { title: 'Done-For-You Ebooks Library', desc: 'Zero writing or formatting required. Premium ebooks ready to customize and sell as lead magnets or paid products.', img: ebooksImg },

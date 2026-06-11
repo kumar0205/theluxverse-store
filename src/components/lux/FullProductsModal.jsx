@@ -101,7 +101,7 @@ const CATALOG_DATA = [
     tab: '15k+ Reels',
     sections: [
       {
-        title: '🎞️ Mega 15,000+ Viral Reels Vault',
+        title: '🎞️ Mega 15k+ Viral Reels Vault',
         items: [
           'Luxury Reels', 'Faceless Content Packs', 'Reel Templates', 'Reels That Reach Blueprint'
         ]

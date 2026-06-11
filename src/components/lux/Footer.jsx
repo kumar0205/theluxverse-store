@@ -123,17 +123,21 @@ export default function Footer({ instagramLink = GLOBAL_CONFIG.instagram }) {
           marginTop:'12px', flexWrap:'wrap'
         }}>
           {[
-            {label:'Privacy Policy', href:'#REPLACE_LEGAL_LINK'},
-            {label:'Terms of Service', href:'#REPLACE_LEGAL_LINK'},
-            {label:'Refund Policy', href:'#REPLACE_LEGAL_LINK'},
-            {label:'Contact Us', href:'#REPLACE_LEGAL_LINK'}
+            {label:'Privacy Policy', to:'/privacy-policy'},
+            {label:'Terms & Conditions', to:'/terms-and-conditions'},
+            {label:'Refund Policy', to:'/refund-policy'},
+            {label:'Contact Us', to:'/contact'}
           ].map((link, i) => (
-            <a key={i} href={link.href} style={{
+            <Link key={i} to={link.to} style={{
               color:'#444', fontSize:'12px',
-              textDecoration:'none'
-            }}>
+              textDecoration:'none',
+              transition: 'color 0.3s'
+            }}
+            onMouseEnter={e => e.target.style.color = '#D4AF37'}
+            onMouseLeave={e => e.target.style.color = '#444'}
+            >
               {link.label}
-            </a>
+            </Link>
           ))}
         </div>
       </div>
