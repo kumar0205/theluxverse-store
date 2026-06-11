@@ -1,266 +1,293 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import Particles from '@/components/lux/Particles';
+import React from 'react';
+import { useSearchParams } from 'react-router-dom';
+import Navbar from '@/components/lux/Navbar';
+import Footer from '@/components/lux/Footer';
+import ArrowIcon from '@/components/lux/ArrowIcon';
+import { PRODUCTS, GLOBAL_CONFIG } from '@/config/products';
+import usePaymentGuard from '@/hooks/usePaymentGuard';
 
-// ── PLACEHOLDER LINKS — ctrl+F to replace ──
-const REPLACE_DRIVE_STARTER = '#REPLACE_DRIVE_STARTER';
-const REPLACE_DRIVE_CREATOR = '#REPLACE_DRIVE_CREATOR';
-const REPLACE_DRIVE_FULL = '#REPLACE_DRIVE_FULL';
-const REPLACE_LAUNCHPAD_LINK = '#REPLACE_LAUNCHPAD_LINK';
+// Priority 2 — Drive links come from central config, not hardcoded here.
+// Priority 3 — Only the verified product's button is shown.
+// Priority 1+4 — Guard hook calls /api/verify-payment (server-side Razorpay proxy).
+//               Secrets NEVER touch the browser.
 
-function GoldDustParticle({ style }) {
-  return (
-    <div style={{
-      position: 'absolute',
-      width: 4,
-      height: 4,
-      borderRadius: '50%',
-      background: '#D4AF37',
-      boxShadow: '0 0 6px rgba(212,175,55,0.8)',
-      animation: 'goldDust 1.5s ease-out forwards',
-      ...style,
-    }} />
-  );
-}
+// Map URL `product` param → what to show on this page.
+// Only the matching product's access button is rendered.
+const PRODUCT_MAP = {
+  creator: {
+    name: 'Creator Vault',
+    buttonText: 'Open My Creator Vault 📂',
+    getUrl: () => PRODUCTS.creatorVault.driveUrl,
+  },
+  full: {
+    name: 'Full Vault',
+    buttonText: 'Open My Full Vault 📂',
+    getUrl: () => PRODUCTS.fullVault.driveUrl,
+  },
+  fv: {
+    name: 'Full Vault',
+    buttonText: 'Open My Full Vault 📂',
+    getUrl: () => PRODUCTS.fullVault.driveUrl,
+  },
+  launchpad: {
+    name: 'Launchpad',
+    buttonText: 'Join Launchpad Community 💬',
+    getUrl: () => GLOBAL_CONFIG.discord,  // from env var — not in source
+  },
+  lp: {
+    name: 'Launchpad',
+    buttonText: 'Join Launchpad Community 💬',
+    getUrl: () => GLOBAL_CONFIG.discord,
+  },
+};
 
-function AnimatedCheckmark() {
-  const [drawn, setDrawn] = useState(false);
-  const [showDust, setShowDust] = useState(false);
-
-  useEffect(() => {
-    setTimeout(() => setDrawn(true), 200);
-    setTimeout(() => setShowDust(true), 1400);
-  }, []);
-
-  const dustParticles = Array.from({ length: 16 }, (_, i) => ({
-    '--dx': `${(Math.random() - 0.5) * 120}px`,
-    top: '50%', left: '50%',
-    transform: 'translate(-50%, -50%)',
-    animationDelay: `${i * 0.05}s`,
-    animationDuration: `${1 + Math.random() * 0.5}s`,
-  }));
-
-  return (
-    <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 140, height: 140 }}>
-      {showDust && dustParticles.map((p, i) => (
-        <GoldDustParticle key={i} style={p} />
-      ))}
-      <svg width="140" height="140" viewBox="0 0 140 140" fill="none" style={{ position: 'relative', zIndex: 2 }}>
-        {/* Outer ring glow */}
-        <circle cx="70" cy="70" r="60" stroke="rgba(212,175,55,0.1)" strokeWidth="2" fill="none"/>
-        {/* Animated circle */}
-        <circle
-          cx="70" cy="70" r="55"
-          stroke="url(#cgGold)"
-          strokeWidth="2"
-          fill="none"
-          strokeLinecap="round"
-          style={{
-            strokeDasharray: 345,
-            strokeDashoffset: drawn ? 0 : 345,
-            transition: 'stroke-dashoffset 1s cubic-bezier(0.22, 1, 0.36, 1)',
-          }}
-        />
-        {/* Checkmark */}
-        <path
-          d="M42 70 L62 90 L98 52"
-          stroke="url(#cgGold)"
-          strokeWidth="4"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          fill="none"
-          style={{
-            strokeDasharray: 100,
-            strokeDashoffset: drawn ? 0 : 100,
-            transition: 'stroke-dashoffset 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.6s',
-          }}
-        />
-        <defs>
-          <linearGradient id="cgGold" x1="0" y1="0" x2="140" y2="140" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#D4AF37"/>
-            <stop offset="0.5" stopColor="#F9E498"/>
-            <stop offset="1" stopColor="#D4AF37"/>
-          </linearGradient>
-        </defs>
-      </svg>
-    </div>
-  );
+// Resolve product param → config entry (default to creator if unknown)
+function resolveProduct(raw) {
+  if (!raw) return PRODUCT_MAP.creator;
+  const key = raw.toLowerCase();
+  // exact match
+  if (PRODUCT_MAP[key]) return PRODUCT_MAP[key];
+  // substring match (e.g. "fullvault" → "full")
+  for (const [k, v] of Object.entries(PRODUCT_MAP)) {
+    if (key.includes(k)) return v;
+  }
+  return PRODUCT_MAP.creator;
 }
 
 export default function ThankYou() {
-  const [showContent, setShowContent] = useState(false);
+  // Calls /api/verify-payment → Razorpay (server-side, secrets never in browser)
+  // Returns: { loading, product } where product is the verified purchase key.
+  const { loading, product: verifiedProduct } = usePaymentGuard();
 
-  useEffect(() => {
-    setTimeout(() => setShowContent(true), 1600);
-  }, []);
+  const [searchParams] = useSearchParams();
+  // URL param only used as a display hint after server has verified the purchase.
+  const productParam = searchParams.get('product') || searchParams.get('p') || searchParams.get('vault') || '';
 
-  const accessBtns = [
-    { label: 'Access Starter Vault', href: REPLACE_DRIVE_STARTER, sub: 'Ebooks + Digital Products' },
-    { label: 'Access Creator Vault', href: REPLACE_DRIVE_CREATOR, sub: 'Reels + Content Library' },
-    { label: 'Access Full Vault', href: REPLACE_DRIVE_FULL, sub: 'Courses + AI Templates' },
-  ];
+  // Priority 3 — resolve from VERIFIED product returned by server.
+  // Falls back to URL param only as a display label (server already verified it).
+  const activeProduct = resolveProduct(verifiedProduct || productParam);
+
+  // ── Loading screen while /api/verify-payment is in flight ──────────────────
+  if (loading) {
+    return (
+      <div style={{ background: '#050505', minHeight: '100vh', display: 'flex', flexDirection: 'column', padding: '24px', gap: '24px' }}>
+        {/* Navbar skeleton */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '16px' }}>
+          <div style={{ width: '120px', height: '24px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px' }} className="shimmer" />
+          <div style={{ width: '60px', height: '16px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px' }} className="shimmer" />
+        </div>
+
+        {/* Center content skeleton */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '24px', maxWidth: '600px', width: '100%', margin: '0 auto' }}>
+          <div style={{ width: '180px', height: '48px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px' }} className="shimmer" />
+          <div style={{ width: '280px', height: '24px', background: 'rgba(255,255,255,0.03)', borderRadius: '4px' }} className="shimmer" />
+          
+          {/* Card skeleton */}
+          <div style={{ width: '100%', height: '160px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ width: '120px', height: '20px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px' }} className="shimmer" />
+            <div style={{ width: '100%', height: '14px', background: 'rgba(255,255,255,0.03)', borderRadius: '4px' }} className="shimmer" />
+            <div style={{ width: '80%', height: '14px', background: 'rgba(255,255,255,0.03)', borderRadius: '4px' }} className="shimmer" />
+          </div>
+          
+          {/* Button skeleton */}
+          <div style={{ width: '100%', height: '56px', background: 'rgba(212,175,55,0.05)', border: '1px solid rgba(212,175,55,0.2)', borderRadius: '9999px' }} className="shimmer" />
+        </div>
+
+        <style>{`
+          .shimmer {
+            position: relative;
+            overflow: hidden;
+          }
+          .shimmer::after {
+            position: absolute;
+            inset: 0;
+            transform: translateX(-100%);
+            background: linear-gradient(
+              90deg,
+              transparent,
+              rgba(255, 255, 255, 0.04),
+              transparent
+            );
+            animation: loading-shimmer 1.5s infinite;
+            content: '';
+          }
+          @keyframes loading-shimmer {
+            100% {
+              transform: translateX(100%);
+            }
+          }
+        `}</style>
+      </div>
+    );
+  }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: '#050505',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '40px 20px',
-      position: 'relative',
-      overflow: 'hidden',
-    }}>
-      <Particles count={6} />
+    <div style={{ background: '#050505', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Navbar />
 
-      {/* Background glow */}
-      <div style={{
-        position: 'absolute',
-        top: '50%', left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 600, height: 600,
-        background: 'radial-gradient(circle, rgba(212,175,55,0.06) 0%, transparent 70%)',
-        pointerEvents: 'none',
-      }} />
-
-      <div style={{
-        position: 'relative', zIndex: 2,
-        maxWidth: 660,
-        width: '100%',
-        textAlign: 'center',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: 32,
-      }}>
-        {/* Logo */}
-        <Link to="/" style={{ textDecoration: 'none' }}>
-          <span className="font-bebas gold-text" style={{ fontSize: 'clamp(22px, 4vw, 28px)', letterSpacing: '0.1em' }}>
-            theluxverse
-          </span>
-        </Link>
-
-        {/* Checkmark */}
-        <AnimatedCheckmark />
-
-        {/* Headline */}
-        <div style={{
-          opacity: showContent ? 1 : 0,
-          transform: showContent ? 'translateY(0)' : 'translateY(20px)',
-          transition: 'all 0.7s cubic-bezier(0.22,1,0.36,1)',
-        }}>
-          <h1 className="font-bebas" style={{
-            fontSize: 'clamp(52px, 10vw, 88px)',
-            color: '#ffffff',
-            lineHeight: 1.05,
-            marginBottom: 16,
-          }}>
-            YOU'RE IN. <span className="gold-text">LFG 🔥</span>
+      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '120px 20px', textAlign: 'center', background: 'radial-gradient(ellipse at center top, #100d00 0%, #050505 80%)' }}>
+        <div style={{ maxWidth: 600, width: '100%', paddingTop: '32px' }}>
+          <h1 className="font-bebas" style={{ fontSize: 'clamp(40px, 8vw, 60px)', color: '#ffffff', marginBottom: 8, lineHeight: 1.1 }}>
+            🎉 You're In!
           </h1>
-          <p style={{
-            fontFamily: 'Inter, sans-serif',
-            fontSize: 'clamp(16px, 2vw, 18px)',
-            color: '#8E8E8E',
-            lineHeight: 1.7,
-            maxWidth: 500,
-            margin: '0 auto',
-          }}>
-            Your vault is ready. Click your access link below to get everything instantly.
+          <p style={{ fontFamily: 'Poppins, sans-serif', fontSize: '18px', color: '#E0E0E0', marginBottom: 20 }}>
+            Your access is ready below.
           </p>
-        </div>
 
-        {/* Access Buttons — Glassmorphism container */}
-        <div
-          className="glass"
-          style={{
-            width: '100%',
-            padding: '32px 28px',
-            opacity: showContent ? 1 : 0,
-            transform: showContent ? 'translateY(0)' : 'translateY(20px)',
-            transition: 'all 0.7s cubic-bezier(0.22,1,0.36,1) 0.15s',
-          }}
-        >
-          <div className="section-label" style={{ marginBottom: 20, display: 'block', textAlign: 'center' }}>
-            YOUR ACCESS LINKS
+          {/* Delivery Confirmation */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', marginBottom: '32px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#4ADE80', fontSize: '15px', fontWeight: 500 }}>
+              <span style={{ color: '#4ADE80' }}>✔</span> Lifetime access activated
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#4ADE80', fontSize: '15px', fontWeight: 500 }}>
+              <span style={{ color: '#4ADE80' }}>✔</span> Instant delivery completed
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#4ADE80', fontSize: '15px', fontWeight: 500 }}>
+              <span style={{ color: '#4ADE80' }}>✔</span> Access link sent to your email
+            </div>
+            <div style={{ marginTop: '4px', color: '#a0a0a0', fontSize: '14px', maxWidth: '480px', lineHeight: '1.4' }}>
+              📩 If you don't see it within 1 minute, check <strong>Spam</strong> or <strong>Promotions</strong>.
+            </div>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {accessBtns.map((btn, i) => (
-              <a
-                key={i}
-                href={btn.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-gold"
-                style={{
-                  justifyContent: 'space-between',
-                  width: '100%',
-                  padding: '16px 24px',
-                  animation: showContent ? `wordFadeIn 0.5s ease forwards ${0.3 + i * 0.12}s` : 'none',
-                  opacity: 0,
-                }}
-              >
-                <span>{btn.label}</span>
-                <span style={{ fontSize: '0.75rem', opacity: 0.7, fontWeight: 400 }}>{btn.sub}</span>
-              </a>
-            ))}
+
+          {/* How to Access (2-Step Card) */}
+          <div className="vault-card" style={{ background: '#111111', textAlign: 'left', marginBottom: 32 }}>
+            <h2 style={{ fontFamily: 'Poppins, sans-serif', fontSize: '18px', color: '#ffffff', fontWeight: 600, marginBottom: 20, textAlign: 'center' }}>
+              How To Access
+            </h2>
+
+            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <li style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+                <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(212,175,55,0.1)', color: '#D4AF37', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Bebas Neue', fontSize: '16px', flexShrink: 0 }}>1</div>
+                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '15px', color: '#E0E0E0' }}>Tap the button below.</span>
+              </li>
+              <li style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+                <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(212,175,55,0.1)', color: '#D4AF37', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Bebas Neue', fontSize: '16px', flexShrink: 0 }}>2</div>
+                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '15px', color: '#E0E0E0' }}>Your files will open instantly.</span>
+              </li>
+            </ul>
           </div>
-        </div>
 
-        {/* Divider */}
-        <div style={{
-          width: '100%', height: 1,
-          background: 'linear-gradient(90deg, transparent, rgba(212,175,55,0.2), transparent)',
-          opacity: showContent ? 1 : 0,
-          transition: 'opacity 0.5s ease 0.6s',
-        }} />
+          {/* Priority 3 — ONLY the purchased product's CTA button */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 16 }}>
+            <a
+              href={activeProduct.getUrl()}
+              className="btn-gold"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                width: '100%',
+                justifyContent: 'center',
+                height: '56px',
+                fontWeight: 600,
+                fontSize: '18px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                borderRadius: '9999px',
+                boxShadow: '0 4px 15px rgba(212,175,55,0.2)'
+              }}
+            >
+              {activeProduct.buttonText}
+            </a>
+          </div>
 
-        {/* Upsell box */}
-        <div
-          style={{
-            width: '100%',
-            background: 'rgba(212,175,55,0.04)',
-            border: '1px solid rgba(212,175,55,0.2)',
-            borderRadius: 8,
-            padding: '28px 24px',
-            opacity: showContent ? 1 : 0,
-            transform: showContent ? 'translateY(0)' : 'translateY(20px)',
-            transition: 'all 0.7s cubic-bezier(0.22,1,0.36,1) 0.5s',
+          {/* Support Line — Priority 2: email from env via config */}
+          <div style={{ fontSize: '14px', color: '#a0a0a0', fontFamily: 'Inter, sans-serif', marginBottom: 40 }}>
+            Need help?{' '}
+            <a href={`mailto:${GLOBAL_CONFIG.supportEmail}`} style={{ color: '#D4AF37', textDecoration: 'underline' }}>
+              {GLOBAL_CONFIG.supportEmail}
+            </a>
+          </div>
+
+          {/* Bottom Upsell Section (₹99 Add-On) */}
+          <div style={{
+            background: 'rgba(212, 175, 55, 0.03)',
+            border: '1px solid rgba(212, 175, 55, 0.15)',
+            borderRadius: '16px',
+            padding: '32px 24px',
             textAlign: 'center',
-          }}
-        >
-          <div className="section-label" style={{ marginBottom: 12, display: 'block' }}>LEVEL UP</div>
-          <h3 className="font-bebas" style={{
-            fontSize: 'clamp(24px, 4vw, 36px)',
-            color: '#ffffff',
-            marginBottom: 10,
+            marginBottom: '40px',
+            position: 'relative',
+            overflow: 'hidden'
           }}>
-            Want to <span className="gold-text">sell these yourself?</span>
-          </h3>
-          <p style={{
-            fontFamily: 'Inter, sans-serif',
-            fontSize: '0.9rem',
-            color: '#8E8E8E',
-            lineHeight: 1.6,
-            marginBottom: 20,
-          }}>
-            Join the Launchpad and learn how to turn your vault into a money-making machine — no face, no following required.
-          </p>
-          <a href={REPLACE_LAUNCHPAD_LINK} className="btn-outline">
-            Join The Launchpad →
-          </a>
-        </div>
+            {/* Subtle premium gold top border line */}
+            <div style={{
+              position: 'absolute',
+              top: 0, left: 0, right: 0, height: '3px',
+              background: 'linear-gradient(90deg, #D4AF37, #F9E498, #D4AF37)'
+            }} />
 
-        {/* Footer */}
-        <p style={{
-          fontFamily: 'Inter, sans-serif',
-          fontSize: '0.75rem',
-          color: '#555',
-          letterSpacing: '0.05em',
-        }}>
-          © {new Date().getFullYear()} theluxverse · The Vault. The Edge. The Life.
-        </p>
-      </div>
+            <p style={{
+              color: '#c9a84c',
+              fontSize: '12px',
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              marginBottom: '8px',
+              fontWeight: 600
+            }}>
+              ₹99 Add-On
+            </p>
+            <h3 style={{
+              fontFamily: 'Poppins, sans-serif',
+              fontSize: '22px',
+              color: '#ffffff',
+              fontWeight: 700,
+              marginBottom: '16px'
+            }}>
+              Complete Your Setup For Just ₹99
+            </h3>
+
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: '12px 16px',
+              maxWidth: '360px',
+              margin: '0 auto 28px auto',
+              textAlign: 'left',
+              fontFamily: 'Inter, sans-serif',
+              fontSize: '14px'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#E0E0E0' }}>
+                <span style={{ color: '#4ADE80' }}>✔</span> Razorpay Setup
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#E0E0E0' }}>
+                <span style={{ color: '#4ADE80' }}>✔</span> Website Setup
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#E0E0E0' }}>
+                <span style={{ color: '#4ADE80' }}>✔</span> Google Drive Delivery
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#E0E0E0' }}>
+                <span style={{ color: '#4ADE80' }}>✔</span> Automation Guide
+              </div>
+            </div>
+
+            <a href={GLOBAL_CONFIG.addon} style={{
+              background: 'linear-gradient(135deg,#c9a84c,#e2c06a)',
+              color: '#000',
+              padding: '14px 28px',
+              borderRadius: '8px',
+              fontWeight: '700',
+              fontSize: '15px',
+              textDecoration: 'none',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              width: '100%',
+              maxWidth: '280px',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseOver={(e) => { e.currentTarget.style.transform = 'scale(1.02)'; }}
+            onMouseOut={(e) => { e.currentTarget.style.transform = 'none'; }}
+            >
+              Add To My Order <ArrowIcon size={16} />
+            </a>
+          </div>
+
+        </div>
+      </main>
+
+      <Footer instagramLink={GLOBAL_CONFIG.instagram} />
     </div>
   );
 }

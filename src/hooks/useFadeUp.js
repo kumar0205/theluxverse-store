@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-export default function useFadeUp(threshold = 0.15) {
+export default function useFadeUp(threshold = 0) {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
 

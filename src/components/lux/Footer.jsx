@@ -1,27 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { GLOBAL_CONFIG } from '@/config/products';
 
-export default function Footer({ instagramLink = '#REPLACE_INSTAGRAM' }) {
+export default function Footer({ instagramLink = GLOBAL_CONFIG.instagram }) {
   return (
     <footer style={{
-      background: '#050505',
-      borderTop: '1px solid rgba(212,175,55,0.08)',
+      background: '#080808',
+      borderTop: '1px solid rgba(212,175,55,0.12)',
       position: 'relative',
       overflow: 'hidden',
       padding: '60px 20px 30px',
+      width: '100%',
     }}>
-      {/* Watermark */}
-      <div style={{
-        position: 'absolute',
-        bottom: 0, left: '50%',
-        transform: 'translateX(-50%)',
-        zIndex: 0,
-        pointerEvents: 'none',
-        userSelect: 'none',
-      }}>
-        <div className="watermark-text">THELUXVERSE</div>
-      </div>
-
       {/* Content */}
       <div style={{
         position: 'relative', zIndex: 1,
@@ -52,11 +42,11 @@ export default function Footer({ instagramLink = '#REPLACE_INSTAGRAM' }) {
             style={{
               display: 'flex', alignItems: 'center', gap: 8,
               fontFamily: 'Poppins, sans-serif', fontSize: '0.85rem',
-              color: '#8E8E8E', textDecoration: 'none',
+              color: '#ffffff', textDecoration: 'none',
               transition: 'color 0.3s',
             }}
             onMouseEnter={e => e.currentTarget.style.color = '#D4AF37'}
-            onMouseLeave={e => e.currentTarget.style.color = '#8E8E8E'}
+            onMouseLeave={e => e.currentTarget.style.color = '#ffffff'}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
@@ -68,25 +58,52 @@ export default function Footer({ instagramLink = '#REPLACE_INSTAGRAM' }) {
           <Link to="/launchpad"
             style={{
               fontFamily: 'Poppins, sans-serif', fontSize: '0.85rem',
-              color: '#8E8E8E', textDecoration: 'none',
+              color: '#ffffff', textDecoration: 'none',
               transition: 'color 0.3s',
             }}
             onMouseEnter={e => e.target.style.color = '#D4AF37'}
-            onMouseLeave={e => e.target.style.color = '#8E8E8E'}
+            onMouseLeave={e => e.target.style.color = '#ffffff'}
           >
-            Launchpad
+            Full System
           </Link>
-          <Link to="/links"
-            style={{
-              fontFamily: 'Poppins, sans-serif', fontSize: '0.85rem',
-              color: '#8E8E8E', textDecoration: 'none',
-              transition: 'color 0.3s',
-            }}
-            onMouseEnter={e => e.target.style.color = '#D4AF37'}
-            onMouseLeave={e => e.target.style.color = '#8E8E8E'}
-          >
-            Links
-          </Link>
+        </div>
+
+        {/* Purchase Trust Badges */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: '12px',
+          flexWrap: 'wrap',
+          marginTop: '16px',
+          marginBottom: '8px',
+          width: '100%',
+          maxWidth: '700px'
+        }}>
+          {[
+            { text: 'Secure Checkout', icon: '🛡️' },
+            { text: 'Lifetime Access', icon: '🔑' },
+            { text: 'Instant Delivery', icon: '⚡' },
+            { text: 'Support Available', icon: '💬' }
+          ].map((badge, idx) => (
+            <div key={idx} style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              color: '#E0E0E0',
+              fontFamily: 'Poppins, sans-serif',
+              fontSize: '12.5px',
+              fontWeight: 500,
+              background: 'rgba(212, 175, 55, 0.04)',
+              border: '1px solid rgba(212, 175, 55, 0.12)',
+              borderRadius: '999px',
+              padding: '6px 14px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+            }}>
+              <span style={{ display: 'inline-flex' }}>{badge.icon}</span>
+              <span>{badge.text}</span>
+            </div>
+          ))}
         </div>
 
         <div style={{ height: 1, width: '100%', maxWidth: 400, background: 'linear-gradient(90deg, transparent, rgba(212,175,55,0.2), transparent)' }} />
@@ -99,6 +116,26 @@ export default function Footer({ instagramLink = '#REPLACE_INSTAGRAM' }) {
         }}>
           © {new Date().getFullYear()} theluxverse. All rights reserved. Digital products only.
         </p>
+
+        <div style={{
+          display:'flex', gap:'16px',
+          justifyContent:'center',
+          marginTop:'12px', flexWrap:'wrap'
+        }}>
+          {[
+            {label:'Privacy Policy', href:'#REPLACE_LEGAL_LINK'},
+            {label:'Terms of Service', href:'#REPLACE_LEGAL_LINK'},
+            {label:'Refund Policy', href:'#REPLACE_LEGAL_LINK'},
+            {label:'Contact Us', href:'#REPLACE_LEGAL_LINK'}
+          ].map((link, i) => (
+            <a key={i} href={link.href} style={{
+              color:'#444', fontSize:'12px',
+              textDecoration:'none'
+            }}>
+              {link.label}
+            </a>
+          ))}
+        </div>
       </div>
     </footer>
   );
