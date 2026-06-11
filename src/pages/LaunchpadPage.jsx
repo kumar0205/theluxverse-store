@@ -9,6 +9,9 @@ import TrustBadges from '@/components/lux/TrustBadges';
 import ArrowIcon from '@/components/lux/ArrowIcon';
 import useMobileStickyCTA from '@/hooks/useMobileStickyCTA';
 import { trackEvent } from '@/utils/analytics';
+import proofImg from '@/assets/proof.webp';
+import proof1Img from '@/assets/proof1.webp';
+import proof3Img from '@/assets/proof3.webp';
 
 // Lazy loaded below-the-fold/conditional components
 const FullProductsModal = lazy(() => import('@/components/lux/FullProductsModal'));
@@ -573,8 +576,8 @@ export default function LaunchpadPage() {
             WebkitOverflowScrolling: 'touch',
             scrollbarWidth: 'none',
           }} className="proof-scroll-container">
-            <ProofScreenshot src="/src/assets/proof.webp" alt="Instagram 3M Views Proof" />
-            <ProofScreenshot src="/src/assets/proof1.webp" alt="Instagram Proof 2" />
+            <ProofScreenshot src={proofImg} alt="Instagram 3M Views Proof" />
+            <ProofScreenshot src={proof1Img} alt="Instagram Proof 2" />
           </div>
 
           {/* Extracted Stats Cards */}
@@ -671,7 +674,7 @@ export default function LaunchpadPage() {
             This is what our store earned from the same reels pack and methods you get inside the system.
           </p>
 
-          <ProofScreenshot src="/src/assets/proof3.webp" alt="Gumroad Earnings Proof" maxWidth="400px" isBlock={true} />
+          <ProofScreenshot src={proof3Img} alt="Gumroad Earnings Proof" maxWidth="400px" isBlock={true} />
 
           <div style={{
             background: 'rgba(201,168,76,0.06)',
