@@ -245,10 +245,11 @@ export default function LaunchpadPage() {
             <span style={{ fontSize: '13px', color: '#8E8E8E', fontFamily: 'Inter, sans-serif', letterSpacing: '0.03em' }}>
               Instant Access • Lifetime Updates
             </span>
-            <TrustBadges />
           </div>
 
         </ScrollReveal>
+
+        <TrustBadges />
       </section>
 
       {/* ── 3. PAIN POINTS CHECKBOXES ── */}
@@ -543,9 +544,10 @@ export default function LaunchpadPage() {
             <span style={{ fontSize: '13px', color: '#8E8E8E', fontFamily: 'Inter, sans-serif', marginTop: '12px' }}>
               Instant Access • Lifetime Updates
             </span>
-            <TrustBadges />
           </div>
         </ScrollReveal>
+
+        <TrustBadges />
       </section>
 
       <div className="gold-divider" />
