@@ -295,6 +295,8 @@ export const db = {
               setDoc(docRef, seedVal).then(() => callback(seedVal));
             }
           }
+        }, (error) => {
+          console.error(`Firestore subscribeToDoc error for ${collectionName}/${docId}:`, error);
         });
       });
       return () => {
@@ -323,6 +325,8 @@ export const db = {
         realUnsubscribe = onSnapshot(colRef, (colSnap) => {
           const list = colSnap.docs.map(d => ({ id: d.id, ...d.data() }));
           callback(list);
+        }, (error) => {
+          console.error(`Firestore subscribeToCollection error for ${collectionName}:`, error);
         });
       });
       return () => {
