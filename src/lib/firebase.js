@@ -18,6 +18,14 @@ const isFirebaseConfigured = !!(
   firebaseConfig.projectId
 );
 
+if (typeof window !== 'undefined') {
+  if (isFirebaseConfigured) {
+    console.log("🔥 [Firebase] Configuration detected! Connecting to live Firestore/Auth database.");
+  } else {
+    console.warn("⚠️ [Firebase] No credentials found. Running in local Mock Mode (LocalStorage).");
+  }
+}
+
 // Initialize Firebase App
 if (isFirebaseConfigured && getApps().length === 0) {
   initializeApp(firebaseConfig);
