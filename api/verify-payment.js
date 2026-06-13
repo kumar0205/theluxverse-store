@@ -82,6 +82,11 @@ export default async function handler(req, res) {
 
     let product = noteProduct;
 
+    // Map numeric product IDs from notes to canonical product keys
+    if      (product === '834')   product = 'launchpad';
+    else if (product === '169')   product = 'creator';
+    else if (product === '118')   product = 'full';
+
     if (!product) {
       // Amount-based fallback — match to known product prices
       if      (amountINR === 699)   product = 'creator';

@@ -35,6 +35,11 @@ export default function ThankYou() {
       buttonText: 'Open My Creator Vault 📂',
       getUrl: () => products.creatorVault.driveUrl,
     },
+    '169': {
+      name: 'Creator Vault',
+      buttonText: 'Open My Creator Vault 📂',
+      getUrl: () => products.creatorVault.driveUrl,
+    },
     full: {
       name: 'Full Vault',
       buttonText: 'Open My Full Vault 📂',
@@ -45,12 +50,22 @@ export default function ThankYou() {
       buttonText: 'Open My Full Vault 📂',
       getUrl: () => products.fullVault.driveUrl,
     },
+    '118': {
+      name: 'Full Vault',
+      buttonText: 'Open My Full Vault 📂',
+      getUrl: () => products.fullVault.driveUrl,
+    },
     launchpad: {
       name: 'Launchpad',
       buttonText: 'Join Launchpad Community 💬',
       getUrl: () => globalSettings.discord,
     },
     lp: {
+      name: 'Launchpad',
+      buttonText: 'Join Launchpad Community 💬',
+      getUrl: () => globalSettings.discord,
+    },
+    '834': {
       name: 'Launchpad',
       buttonText: 'Join Launchpad Community 💬',
       getUrl: () => globalSettings.discord,
