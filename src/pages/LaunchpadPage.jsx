@@ -1358,7 +1358,7 @@ const MobileStickyCTA = ({ launchpadLink, finalCtaRef, heroRef, price }) => {
           flexShrink: 0
         }}
       >
-        Join Now - ₹499 <ArrowIcon size={11} />
+        Join Now - {price} <ArrowIcon size={11} />
       </a>
     </div>
   );

@@ -140,6 +140,16 @@ class MockFirestore {
     if (!localStorage.getItem('luxverse_db_analytics')) {
       localStorage.setItem('luxverse_db_analytics', JSON.stringify(DEFAULT_ANALYTICS));
     }
+
+    // Listen for storage events (enables instant cross-tab real-time updates in Mock Mode)
+    if (typeof window !== 'undefined') {
+      window.addEventListener('storage', (event) => {
+        if (event.key && event.key.startsWith('luxverse_db_')) {
+          const collectionName = event.key.replace('luxverse_db_', '');
+          this._notify(collectionName);
+        }
+      });
+    }
   }
 
   _getData(collectionName) {
@@ -243,11 +253,16 @@ export const auth = {
   },
   onAuthStateChanged: (callback) => {
     if (isFirebaseConfigured) {
-      let unsubscribe = () => {};
+      let unsubscribed = false;
+      let realUnsubscribe = null;
       import('firebase/auth').then(({ getAuth, onAuthStateChanged: realOnAuthChange }) => {
-        unsubscribe = realOnAuthChange(getAuth(), callback);
+        if (unsubscribed) return;
+        realUnsubscribe = realOnAuthChange(getAuth(), callback);
       }).catch(err => console.error("Error setting up auth state listener", err));
-      return () => unsubscribe();
+      return () => {
+        unsubscribed = true;
+        if (realUnsubscribe) realUnsubscribe();
+      };
     } else {
       return mockAuthInstance.onAuthStateChanged(callback);
     }
@@ -257,14 +272,16 @@ export const auth = {
 export const db = {
   subscribeToDoc: (collectionName, docId, callback) => {
     if (isFirebaseConfigured) {
-      let unsubscribe = () => {};
+      let unsubscribed = false;
+      let realUnsubscribe = null;
       Promise.all([
         import('firebase/firestore'),
         import('firebase/app')
       ]).then(([{ getFirestore, doc, onSnapshot, setDoc }]) => {
+        if (unsubscribed) return;
         const firestore = getFirestore();
         const docRef = doc(firestore, collectionName, docId);
-        unsubscribe = onSnapshot(docRef, (docSnap) => {
+        realUnsubscribe = onSnapshot(docRef, (docSnap) => {
           if (docSnap.exists()) {
             callback(docSnap.data());
           } else {
@@ -280,7 +297,10 @@ export const db = {
           }
         });
       });
-      return () => unsubscribe();
+      return () => {
+        unsubscribed = true;
+        if (realUnsubscribe) realUnsubscribe();
+      };
     } else {
       return mockDbInstance.subscribe(collectionName, (snap) => {
         const fullData = snap.data();
@@ -291,19 +311,24 @@ export const db = {
 
   subscribeToCollection: (collectionName, callback) => {
     if (isFirebaseConfigured) {
-      let unsubscribe = () => {};
+      let unsubscribed = false;
+      let realUnsubscribe = null;
       Promise.all([
         import('firebase/firestore'),
         import('firebase/app')
       ]).then(([{ getFirestore, collection, onSnapshot }]) => {
+        if (unsubscribed) return;
         const firestore = getFirestore();
         const colRef = collection(firestore, collectionName);
-        unsubscribe = onSnapshot(colRef, (colSnap) => {
+        realUnsubscribe = onSnapshot(colRef, (colSnap) => {
           const list = colSnap.docs.map(d => ({ id: d.id, ...d.data() }));
           callback(list);
         });
       });
-      return () => unsubscribe();
+      return () => {
+        unsubscribed = true;
+        if (realUnsubscribe) realUnsubscribe();
+      };
     } else {
       return mockDbInstance.subscribe(collectionName, (snap) => {
         const fullData = snap.data();
