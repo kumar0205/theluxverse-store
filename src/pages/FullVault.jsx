@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/lux/Navbar';
 import Footer from '@/components/lux/Footer';
@@ -10,10 +10,7 @@ import { VAULT_PRODUCTS } from '@/data/vaultData';
 
 import { PRODUCTS, GLOBAL_CONFIG, DELIVERY_STEPS } from '@/config/products';
 import CheckMark from '@/components/lux/CheckMark';
-
-// ── PLACEHOLDER LINKS ──
-const REPLACE_RAZORPAY_FULL = PRODUCTS.fullVault.url;
-const REPLACE_INSTAGRAM = GLOBAL_CONFIG.instagram;
+import { useDb } from '@/config/DbContext';
 
 const PERSONAS = [
   'You want the complete digital products arsenal — nothing left out',
@@ -35,10 +32,22 @@ const COMPARISON = [
 ];
 
 export default function FullVault() {
+  const { products, globalSettings, trackVisitorLocal } = useDb();
   const { ref: contentRef, visible: contentVisible } = useFadeUp();
   const { ref: deliveryRef, visible: deliveryVisible } = useFadeUp();
   const { ref: personaRef, visible: personaVisible } = useFadeUp();
   const { ref: compareRef, visible: compareVisible } = useFadeUp();
+
+  useEffect(() => {
+    trackVisitorLocal();
+  }, [trackVisitorLocal]);
+
+  const replaceRazorpayFull = products.fullVault.url;
+  const replaceInstagram = globalSettings.instagram;
+
+  const formattedPrice = typeof products.fullVault.price === 'number'
+    ? `₹${products.fullVault.price.toLocaleString('en-IN')}`
+    : products.fullVault.price;
 
   return (
     <div style={{ background: '#050505', minHeight: '100vh' }}>
@@ -77,13 +86,13 @@ export default function FullVault() {
           WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
           marginBottom: 20,
         }}>
-          ₹999
+          {formattedPrice}
         </div>
         <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 'clamp(15px, 2vw, 18px)', color: '#8E8E8E', maxWidth: 540, lineHeight: 1.7, marginBottom: 36 }}>
           Every single product. Every single tool. 1M+ digital assets, 1000+ courses, 15K AI templates — all unlocked for one payment. This is the vault that makes the others look like a preview.
         </p>
-        <a href={REPLACE_RAZORPAY_FULL} className="btn-gold pulse-glow" style={{ fontSize: '1.05rem' }}>
-          Buy Full Vault for ₹999 <ArrowIcon />
+        <a href={replaceRazorpayFull} className="btn-gold pulse-glow" style={{ fontSize: '1.05rem' }}>
+          Buy Full Vault for {formattedPrice} <ArrowIcon />
         </a>
         <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.5)', marginTop: 14, letterSpacing: '0.05em' }}>
           🔒 Secure payment via Razorpay | Instant delivery
@@ -160,7 +169,7 @@ export default function FullVault() {
           <div className={`fade-up ${compareVisible ? 'visible' : ''}`} style={{ background: '#0D0D0D', border: '1px solid rgba(212,175,55,0.12)', borderRadius: 8, overflow: 'hidden' }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', background: '#111111', borderBottom: '1px solid rgba(212,175,55,0.1)' }} className="text-[10px] sm:text-sm p-3 sm:p-4">
               <span style={{ fontFamily: 'Poppins, sans-serif', color: '#8E8E8E' }}>Feature</span>
-              <span style={{ fontFamily: 'Poppins, sans-serif', color: '#ffffff', textAlign: 'center', fontWeight: 600 }}>Full Vault (₹999)</span>
+              <span style={{ fontFamily: 'Poppins, sans-serif', color: '#ffffff', textAlign: 'center', fontWeight: 600 }}>Full Vault ({formattedPrice})</span>
               <span style={{ fontFamily: 'Poppins, sans-serif', color: '#D4AF37', textAlign: 'center', fontWeight: 600 }}>Launchpad ✦</span>
             </div>
             {COMPARISON.map((row, i) => (
@@ -233,15 +242,15 @@ export default function FullVault() {
         <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 'clamp(15px, 2vw, 17px)', color: '#8E8E8E', marginBottom: 36 }}>
           One-time payment. Everything unlocked. Yours forever.
         </p>
-        <a href={REPLACE_RAZORPAY_FULL} className="btn-gold pulse-glow" style={{ fontSize: '1.05rem' }}>
-          Get Full Vault for ₹999 <ArrowIcon />
+        <a href={replaceRazorpayFull} className="btn-gold pulse-glow" style={{ fontSize: '1.05rem' }}>
+          Get Full Vault for {formattedPrice} <ArrowIcon />
         </a>
         <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.5)', marginTop: 16, letterSpacing: '0.05em' }}>
           🔒 Secure payment via Razorpay | Instant delivery
         </p>
       </section>
 
-      <Footer instagramLink={REPLACE_INSTAGRAM} />
+      <Footer instagramLink={replaceInstagram} />
     </div>
   );
 }

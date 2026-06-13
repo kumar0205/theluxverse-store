@@ -17,7 +17,7 @@ import proof3Img from '@/assets/proof3.webp';
 const FullProductsModal = lazy(() => import('@/components/lux/FullProductsModal'));
 const WinsCarousel = lazy(() => import('@/components/lux/WinsCarousel'));
 const FaqSection = lazy(() => import('@/components/lux/FaqSection'));
-import { PRODUCTS, GLOBAL_CONFIG } from '@/config/products';
+import { useDb } from '@/config/DbContext';
 import {
   TOOLS_DATA,
   PAIN_POINTS,
@@ -25,10 +25,6 @@ import {
   PRICING_FEATURES,
 } from '@/data/launchpad';
 
-// ── URLs from central config ──
-const REPLACE_LAUNCHPAD_GLOBAL = PRODUCTS.launchpad.url;
-const REPLACE_LAUNCHPAD_INDIA = PRODUCTS.launchpad.url;
-const REPLACE_INSTAGRAM = GLOBAL_CONFIG.instagram;
 
 const PainCheckbox = ({ pain, isChecked, onChange }) => {
   return (
@@ -134,6 +130,7 @@ const ProofScreenshot = React.memo(({ src, alt, maxWidth = '360px', isBlock = fa
 });
 
 export default function LaunchpadPage() {
+  const { products, globalSettings, analytics, trackVisitorLocal } = useDb();
   const timelineContainerRef = useRef(null);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isCatalogOpen, setIsCatalogOpen] = useState(false);
@@ -143,6 +140,32 @@ export default function LaunchpadPage() {
   const [selectedPains, setSelectedPains] = useState({});
 
   const selectedCount = Object.values(selectedPains).filter(Boolean).length;
+
+  useEffect(() => {
+    trackVisitorLocal();
+  }, [trackVisitorLocal]);
+
+  const replaceLaunchpadGlobal = products.launchpad.globalUrl || products.launchpad.url;
+  const replaceLaunchpadIndia = products.launchpad.url;
+  const replaceInstagram = globalSettings.instagram;
+
+  const formattedPrice = typeof products.launchpad.price === 'number'
+    ? `₹${products.launchpad.price.toLocaleString('en-IN')}`
+    : products.launchpad.price;
+
+  const formattedOriginalPrice = typeof products.launchpad.originalPrice === 'number'
+    ? `₹${products.launchpad.originalPrice.toLocaleString('en-IN')}`
+    : products.launchpad.originalPrice;
+
+  const formattedCreatorPrice = typeof products.creatorVault.price === 'number'
+    ? `₹${products.creatorVault.price.toLocaleString('en-IN')}`
+    : products.creatorVault.price;
+
+  const formattedGlobalPrice = typeof products.launchpad.globalPrice === 'number'
+    ? `$${products.launchpad.globalPrice}`
+    : products.launchpad.globalPrice;
+
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -1130,8 +1153,8 @@ export default function LaunchpadPage() {
                 🔥 Founding Member Price
               </div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
-                <span style={{ fontFamily: 'Poppins, sans-serif', fontSize: '18px', color: '#666', textDecoration: 'line-through', fontWeight: '200' }}>₹21,493</span>
-                <span style={{ fontFamily: 'Poppins, sans-serif', fontSize: '56px', fontWeight: '700', color: '#D4AF37', lineHeight: 1 }}>₹1,299</span>
+                <span style={{ fontFamily: 'Poppins, sans-serif', fontSize: '18px', color: '#666', textDecoration: 'line-through', fontWeight: '200' }}>{formattedOriginalPrice}</span>
+                <span style={{ fontFamily: 'Poppins, sans-serif', fontSize: '56px', fontWeight: '700', color: '#D4AF37', lineHeight: 1 }}>{formattedPrice}</span>
               </div>
               <p style={{ color: '#8E8E8E', fontSize: '13px', fontFamily: 'Inter, sans-serif', margin: '6px 0 0' }}>One-time payment • Lifetime Access</p>
             </div>
@@ -1156,16 +1179,16 @@ export default function LaunchpadPage() {
               {/* Total vs discounted */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.4)', borderRadius: '10px', padding: '12px 16px' }}>
                 <span style={{ fontFamily: 'Poppins, sans-serif', fontSize: '13px', color: '#D4AF37', fontWeight: 700 }}>🔥 You Pay Today</span>
-                <span style={{ fontFamily: 'Poppins, sans-serif', fontSize: '18px', color: '#D4AF37', fontWeight: 700 }}>₹1,299 only</span>
+                <span style={{ fontFamily: 'Poppins, sans-serif', fontSize: '18px', color: '#D4AF37', fontWeight: 700 }}>{formattedPrice} only</span>
               </div>
             </div>
 
             {/* Primary CTA */}
             <a
-              href={REPLACE_LAUNCHPAD_INDIA}
+              href={replaceLaunchpadIndia}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => trackEvent('launchpad_checkout_click', { region: 'IN', price: '₹1299' })}
+              onClick={() => trackEvent('launchpad_checkout_click', { region: 'IN', price: formattedPrice })}
               className="btn-gold pulse-glow"
               style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '17px', padding: '18px', fontWeight: 'bold', textDecoration: 'none', borderRadius: '12px' }}
             >
@@ -1173,13 +1196,13 @@ export default function LaunchpadPage() {
             </a>
 
             <a
-              href={REPLACE_LAUNCHPAD_GLOBAL}
+              href={replaceLaunchpadGlobal}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => trackEvent('launchpad_checkout_click', { region: 'global', price: '$25' })}
+              onClick={() => trackEvent('launchpad_checkout_click', { region: 'global', price: formattedGlobalPrice })}
               style={{ display: 'block', marginTop: '12px', fontFamily: 'Inter, sans-serif', fontSize: '13.5px', color: '#8E8E8E', textDecoration: 'underline', textAlign: 'center' }}
             >
-              Outside India? Pay $25 globally →
+              Outside India? Pay {formattedGlobalPrice} globally →
             </a>
           </div>
 
@@ -1224,7 +1247,7 @@ export default function LaunchpadPage() {
                 e.currentTarget.style.borderColor = 'rgba(212,175,55,0.35)';
               }}
             >
-              Not ready for the full system? Start with just core assets (starts at ₹699) →
+              Not ready for the full system? Start with just core assets (starts at {formattedCreatorPrice}) →
             </Link>
           </div>
 
@@ -1232,9 +1255,9 @@ export default function LaunchpadPage() {
       </section>
 
       {/* ── MOBILE STICKY CTA ── */}
-      <MobileStickyCTA launchpadLink={REPLACE_LAUNCHPAD_INDIA} finalCtaRef={finalCtaRef} />
+      <MobileStickyCTA launchpadLink={replaceLaunchpadIndia} finalCtaRef={finalCtaRef} price={formattedPrice} />
 
-      <Footer instagramLink={REPLACE_INSTAGRAM} />
+      <Footer instagramLink={replaceInstagram} />
 
       {/* ── FULL PRODUCTS CATALOG MODAL ── */}
       {isCatalogOpen && (
@@ -1309,7 +1332,7 @@ const ToolText = ({ tool, alignRight = false }) => {
 
 
 // ── MOBILE STICKY CTA ──
-const MobileStickyCTA = ({ launchpadLink, finalCtaRef, heroRef }) => {
+const MobileStickyCTA = ({ launchpadLink, finalCtaRef, heroRef, price }) => {
   const visible = useMobileStickyCTA(heroRef, finalCtaRef);
   return (
     <div className={`mobile-sticky-cta ${visible ? 'visible' : ''}`}>
@@ -1318,7 +1341,7 @@ const MobileStickyCTA = ({ launchpadLink, finalCtaRef, heroRef }) => {
           Get Lifetime Access
         </span>
         <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#8E8E8E' }}>
-          One-time • ₹1,299
+          One-time • {price}
         </span>
       </div>
       <a
@@ -1335,7 +1358,7 @@ const MobileStickyCTA = ({ launchpadLink, finalCtaRef, heroRef }) => {
           flexShrink: 0
         }}
       >
-        Join Now <ArrowIcon size={11} />
+        Join Now - ₹499 <ArrowIcon size={11} />
       </a>
     </div>
   );

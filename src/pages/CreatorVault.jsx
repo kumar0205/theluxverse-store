@@ -8,11 +8,10 @@ import ArrowIcon from '@/components/lux/ArrowIcon';
 import { VAULT_PRODUCTS } from '@/data/vaultData';
 
 import { PRODUCTS, GLOBAL_CONFIG, DELIVERY_STEPS } from '@/config/products';
+import { useEffect } from 'react';
+import { useDb } from '@/config/DbContext';
 import CheckMark from '@/components/lux/CheckMark';
 
-// ── PLACEHOLDER LINKS — ctrl+F to replace ──
-const REPLACE_RAZORPAY_CREATOR = PRODUCTS.creatorVault.url;
-const REPLACE_INSTAGRAM = GLOBAL_CONFIG.instagram;
 
 const PERSONAS = [
   'You want to learn AND earn at the same time',
@@ -33,11 +32,27 @@ const COMPARISON = [
 ];
 
 export default function CreatorVault() {
+  const { products, globalSettings, trackVisitorLocal } = useDb();
   const { ref: contentRef, visible: contentVisible } = useFadeUp();
   const { ref: deliveryRef, visible: deliveryVisible } = useFadeUp();
   const { ref: personaRef, visible: personaVisible } = useFadeUp();
   const { ref: compareRef, visible: compareVisible } = useFadeUp();
   const [expandedItem, setExpandedItem] = useState(null);
+
+  useEffect(() => {
+    trackVisitorLocal();
+  }, [trackVisitorLocal]);
+
+  const replaceRazorpayCreator = products.creatorVault.url;
+  const replaceInstagram = globalSettings.instagram;
+
+  const formattedPrice = typeof products.creatorVault.price === 'number'
+    ? `₹${products.creatorVault.price.toLocaleString('en-IN')}`
+    : products.creatorVault.price;
+
+  const formattedFullPrice = typeof products.fullVault.price === 'number'
+    ? `₹${products.fullVault.price.toLocaleString('en-IN')}`
+    : products.fullVault.price;
 
   return (
     <div style={{ background: '#050505', minHeight: '100vh' }}>
@@ -77,13 +92,13 @@ export default function CreatorVault() {
           WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
           marginBottom: 20,
         }}>
-          ₹699
+          {formattedPrice}
         </div>
         <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 'clamp(15px, 2vw, 18px)', color: '#8E8E8E', maxWidth: 520, lineHeight: 1.7, marginBottom: 36 }}>
           1,000+ premium courses, 15k+ AI templates, and hundreds of ready-to-sell ebooks. Built for creators who want to learn and earn — without showing their face.
         </p>
-        <a href={REPLACE_RAZORPAY_CREATOR} className="btn-gold pulse-glow" style={{ fontSize: '1.05rem' }}>
-          Buy Creator Vault for ₹699 <ArrowIcon />
+        <a href={replaceRazorpayCreator} className="btn-gold pulse-glow" style={{ fontSize: '1.05rem' }}>
+          Buy Creator Vault for {formattedPrice} <ArrowIcon />
         </a>
         <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.5)', marginTop: 14, letterSpacing: '0.05em' }}>
           🔒 Secure payment via Razorpay | Instant delivery
@@ -215,8 +230,8 @@ export default function CreatorVault() {
           <div className={`fade-up ${compareVisible ? 'visible' : ''}`} style={{ background: '#0D0D0D', border: '1px solid rgba(212,175,55,0.12)', borderRadius: 8, overflow: 'hidden' }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', background: '#111111', borderBottom: '1px solid rgba(212,175,55,0.1)' }} className="text-xs sm:text-sm p-3 sm:p-5">
               <span style={{ fontFamily: 'Poppins, sans-serif', color: '#8E8E8E' }}>Feature</span>
-              <span style={{ fontFamily: 'Poppins, sans-serif', color: '#8E8E8E', textAlign: 'center' }}>Creator ₹699</span>
-              <span style={{ fontFamily: 'Poppins, sans-serif', color: '#D4AF37', textAlign: 'center', fontWeight: 600 }}>Full ₹999 ✦</span>
+              <span style={{ fontFamily: 'Poppins, sans-serif', color: '#8E8E8E', textAlign: 'center' }}>Creator {formattedPrice}</span>
+              <span style={{ fontFamily: 'Poppins, sans-serif', color: '#D4AF37', textAlign: 'center', fontWeight: 600 }}>Full {formattedFullPrice} ✦</span>
             </div>
             {COMPARISON.map((row, i) => (
               <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', borderBottom: i < COMPARISON.length - 1 ? '1px solid rgba(212,175,55,0.06)' : 'none', alignItems: 'center' }} className="text-xs sm:text-sm p-3 sm:p-5">
@@ -288,8 +303,8 @@ export default function CreatorVault() {
         <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 'clamp(15px, 2vw, 17px)', color: '#8E8E8E', marginBottom: 36 }}>
           One-time payment. Instant access. Yours forever.
         </p>
-        <a href={REPLACE_RAZORPAY_CREATOR} className="btn-gold pulse-glow" style={{ fontSize: '1.05rem' }}>
-          Get Creator Vault for ₹699 <ArrowIcon />
+        <a href={replaceRazorpayCreator} className="btn-gold pulse-glow" style={{ fontSize: '1.05rem' }}>
+          Get Creator Vault for {formattedPrice} <ArrowIcon />
         </a>
         <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.5)', marginTop: 16, letterSpacing: '0.05em' }}>
           🔒 Secure payment via Razorpay | Instant delivery
@@ -301,7 +316,8 @@ export default function CreatorVault() {
         </div>
       </section>
 
-      <Footer instagramLink={REPLACE_INSTAGRAM} />
+      <Footer instagramLink={replaceInstagram} />
+
     </div>
   );
 }

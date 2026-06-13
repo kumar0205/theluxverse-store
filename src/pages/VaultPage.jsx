@@ -1,14 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/lux/Navbar';
 import ArrowIcon from '@/components/lux/ArrowIcon';
 import Footer from '@/components/lux/Footer';
-import { PRODUCTS } from '@/config/products';
 import CheckMark from '@/components/lux/CheckMark';
+import { useDb } from '@/config/DbContext';
 
-// ── PLACEHOLDER LINKS — replace before going live ──
-const REPLACE_RAZORPAY_CREATOR = PRODUCTS.creatorVault.url;
-const REPLACE_RAZORPAY_FULL = PRODUCTS.fullVault.url;
 
 // ── OUTCOME-BASED FEATURE ROWS ──
 // Full Vault: all outcomes included
@@ -155,8 +152,30 @@ const FaqItem = ({ item, isOpen, onToggle }) => (
 // MAIN COMPONENT
 // ══════════════════════════════════════════════════
 export default function VaultPage() {
+  const { products, globalSettings, trackVisitorLocal } = useDb();
   const [openFaqIdx, setOpenFaqIdx] = useState(null);
   const handleFaqToggle = idx => setOpenFaqIdx(prev => prev === idx ? null : idx);
+
+  useEffect(() => {
+    trackVisitorLocal();
+  }, [trackVisitorLocal]);
+
+  const replaceRazorpayCreator = products.creatorVault.url;
+  const replaceRazorpayFull = products.fullVault.url;
+  const replaceInstagram = globalSettings.instagram;
+
+  const formattedCreatorPrice = typeof products.creatorVault.price === 'number'
+    ? `₹${products.creatorVault.price.toLocaleString('en-IN')}`
+    : products.creatorVault.price;
+
+  const formattedFullPrice = typeof products.fullVault.price === 'number'
+    ? `₹${products.fullVault.price.toLocaleString('en-IN')}`
+    : products.fullVault.price;
+
+  const formattedLaunchpadPrice = typeof products.launchpad.price === 'number'
+    ? `₹${products.launchpad.price.toLocaleString('en-IN')}`
+    : products.launchpad.price;
+
 
   return (
     <div style={{
@@ -345,7 +364,7 @@ export default function VaultPage() {
                   fontSize: '44px', lineHeight: 1,
                   background: 'linear-gradient(135deg, #D4AF37 0%, #F9E498 50%, #D4AF37 100%)',
                   WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-                }}>₹999</span>
+                }}>{formattedFullPrice}</span>
                 <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', color: '#555' }}>one-time</span>
               </div>
               {/* Best value nudge */}
@@ -375,7 +394,7 @@ export default function VaultPage() {
 
             {/* #5 — keep gold CTA, make it larger */}
             <a
-              href={REPLACE_RAZORPAY_FULL}
+              href={replaceRazorpayFull}
               target="_blank"
               rel="noopener noreferrer"
               className="cta-pulse"
@@ -390,7 +409,7 @@ export default function VaultPage() {
                 letterSpacing: '0.02em',
               }}
             >
-              Get Full Vault — ₹999 <ArrowIcon />
+              Get Full Vault — {formattedFullPrice} <ArrowIcon />
             </a>
 
             {/* #7 — social proof microcopy */}
@@ -456,7 +475,7 @@ export default function VaultPage() {
                 Creator Vault
               </h2>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginBottom: '4px' }}>
-                <span style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 700, fontSize: '44px', color: '#ffffff', lineHeight: 1, }}>₹699</span>
+                <span style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 700, fontSize: '44px', color: '#ffffff', lineHeight: 1, }}>{formattedCreatorPrice}</span>
                 <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: 'rgba(255, 255, 255, 0.5)' }}>one-time</span>
               </div>
               <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: 'rgba(255, 255, 255, 0.6)', margin: 0 }}>
@@ -474,7 +493,7 @@ export default function VaultPage() {
 
             {/* #4 — "Start Small" button text, standard size */}
             <a
-              href={REPLACE_RAZORPAY_CREATOR}
+              href={replaceRazorpayCreator}
               target="_blank"
               rel="noopener noreferrer"
               style={{
@@ -498,7 +517,7 @@ export default function VaultPage() {
                 e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
               }}
             >
-              Start Small — ₹699  {/* #4 */}
+              Start Small — {formattedCreatorPrice}  {/* #4 */}
             </a>
             <p style={{
               fontFamily: 'Inter, sans-serif', fontSize: '11px',
@@ -551,9 +570,9 @@ export default function VaultPage() {
             alignItems: 'center',
           }}>
             <span style={{ fontFamily: 'Poppins, sans-serif', color: '#8E8E8E', fontSize: '13px', fontWeight: 600 }}>Feature</span>
-            <span style={{ fontFamily: 'Poppins, sans-serif', color: '#8E8E8E', fontSize: '13px', fontWeight: 600, textAlign: 'center' }}>Creator ₹699</span>
-            <span style={{ fontFamily: 'Poppins, sans-serif', color: '#8E8E8E', fontSize: '13px', fontWeight: 600, textAlign: 'center' }}>Full ₹999</span>
-            <span style={{ fontFamily: 'Poppins, sans-serif', color: '#D4AF37', fontSize: '13px', fontWeight: 700, textAlign: 'center' }}>Launchpad ₹1,299 ✦</span>
+            <span style={{ fontFamily: 'Poppins, sans-serif', color: '#8E8E8E', fontSize: '13px', fontWeight: 600, textAlign: 'center' }}>Creator {formattedCreatorPrice}</span>
+            <span style={{ fontFamily: 'Poppins, sans-serif', color: '#8E8E8E', fontSize: '13px', fontWeight: 600, textAlign: 'center' }}>Full {formattedFullPrice}</span>
+            <span style={{ fontFamily: 'Poppins, sans-serif', color: '#D4AF37', fontSize: '13px', fontWeight: 700, textAlign: 'center' }}>Launchpad {formattedLaunchpadPrice} ✦</span>
           </div>
 
           {/* Rows */}
@@ -657,7 +676,7 @@ export default function VaultPage() {
 
       </div>{/* end main content */}
 
-      <Footer />
+      <Footer instagramLink={replaceInstagram} />
     </div>
   );
 }

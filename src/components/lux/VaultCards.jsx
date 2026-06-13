@@ -25,25 +25,40 @@ function SacredGeo() {
   );
 }
 
+import { useDb } from '@/config/DbContext';
+
 const CheckIcon = () => (
   <span style={{ color: '#D4AF37', fontWeight: 'bold', fontSize: '1.1rem', lineHeight: 1, flexShrink: 0, marginTop: 1 }}>✓</span>
 );
 
-const plans = [
-  {
-    ...PRODUCTS.fullVault,
-    detailPath: '/full-vault',
-    link: 'full',
-  },
-  {
-    ...PRODUCTS.creatorVault,
-    detailPath: '/creator-vault',
-    link: 'creator',
-  },
-];
-
 export default React.memo(function VaultCards({ razorpayStarter, razorpayCreator, razorpayFull }) {
-  const links = { starter: razorpayStarter, creator: razorpayCreator || PRODUCTS.creatorVault.url, full: razorpayFull || PRODUCTS.fullVault.url };
+  const { products } = useDb();
+
+  const plans = [
+    {
+      ...products.fullVault,
+      detailPath: '/full-vault',
+      link: 'full',
+      // Format prices if they are numbers
+      price: typeof products.fullVault.price === 'number' ? `₹${products.fullVault.price.toLocaleString('en-IN')}` : products.fullVault.price,
+      originalPrice: typeof products.fullVault.originalPrice === 'number' ? `₹${products.fullVault.originalPrice.toLocaleString('en-IN')}` : products.fullVault.originalPrice,
+    },
+    {
+      ...products.creatorVault,
+      detailPath: '/creator-vault',
+      link: 'creator',
+      // Format prices if they are numbers
+      price: typeof products.creatorVault.price === 'number' ? `₹${products.creatorVault.price.toLocaleString('en-IN')}` : products.creatorVault.price,
+      originalPrice: typeof products.creatorVault.originalPrice === 'number' ? `₹${products.creatorVault.originalPrice.toLocaleString('en-IN')}` : products.creatorVault.originalPrice,
+    },
+  ];
+
+  const links = { 
+    starter: razorpayStarter, 
+    creator: razorpayCreator || products.creatorVault.url, 
+    full: razorpayFull || products.fullVault.url 
+  };
+
 
   return (
     <>

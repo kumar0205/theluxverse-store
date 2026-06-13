@@ -11,50 +11,52 @@ import usePaymentGuard from '@/hooks/usePaymentGuard';
 // Priority 1+4 — Guard hook calls /api/verify-payment (server-side Razorpay proxy).
 //               Secrets NEVER touch the browser.
 
-// Map URL `product` param → what to show on this page.
-// Only the matching product's access button is rendered.
-const PRODUCT_MAP = {
-  creator: {
-    name: 'Creator Vault',
-    buttonText: 'Open My Creator Vault 📂',
-    getUrl: () => PRODUCTS.creatorVault.driveUrl,
-  },
-  full: {
-    name: 'Full Vault',
-    buttonText: 'Open My Full Vault 📂',
-    getUrl: () => PRODUCTS.fullVault.driveUrl,
-  },
-  fv: {
-    name: 'Full Vault',
-    buttonText: 'Open My Full Vault 📂',
-    getUrl: () => PRODUCTS.fullVault.driveUrl,
-  },
-  launchpad: {
-    name: 'Launchpad',
-    buttonText: 'Join Launchpad Community 💬',
-    getUrl: () => GLOBAL_CONFIG.discord,  // from env var — not in source
-  },
-  lp: {
-    name: 'Launchpad',
-    buttonText: 'Join Launchpad Community 💬',
-    getUrl: () => GLOBAL_CONFIG.discord,
-  },
-};
+import { useDb } from '@/config/DbContext';
 
 // Resolve product param → config entry (returns null if unknown)
-function resolveProduct(raw) {
+function resolveProduct(raw, productMap) {
   if (!raw) return null;
   const key = raw.toLowerCase();
   // exact match
-  if (PRODUCT_MAP[key]) return PRODUCT_MAP[key];
+  if (productMap[key]) return productMap[key];
   // substring match (e.g. "fullvault" → "full")
-  for (const [k, v] of Object.entries(PRODUCT_MAP)) {
+  for (const [k, v] of Object.entries(productMap)) {
     if (key.includes(k)) return v;
   }
   return null;
 }
 
 export default function ThankYou() {
+  const { products, globalSettings } = useDb();
+  
+  const PRODUCT_MAP = {
+    creator: {
+      name: 'Creator Vault',
+      buttonText: 'Open My Creator Vault 📂',
+      getUrl: () => products.creatorVault.driveUrl,
+    },
+    full: {
+      name: 'Full Vault',
+      buttonText: 'Open My Full Vault 📂',
+      getUrl: () => products.fullVault.driveUrl,
+    },
+    fv: {
+      name: 'Full Vault',
+      buttonText: 'Open My Full Vault 📂',
+      getUrl: () => products.fullVault.driveUrl,
+    },
+    launchpad: {
+      name: 'Launchpad',
+      buttonText: 'Join Launchpad Community 💬',
+      getUrl: () => globalSettings.discord,
+    },
+    lp: {
+      name: 'Launchpad',
+      buttonText: 'Join Launchpad Community 💬',
+      getUrl: () => globalSettings.discord,
+    },
+  };
+
   // Calls /api/verify-payment → Razorpay (server-side, secrets never in browser)
   // Returns: { loading, product } where product is the verified purchase key.
   const { loading, product: verifiedProduct } = usePaymentGuard();
@@ -63,7 +65,8 @@ export default function ThankYou() {
   const navigate = useNavigate();
 
   // Priority 3 — resolve from VERIFIED product returned by server.
-  const activeProduct = resolveProduct(verifiedProduct);
+  const activeProduct = resolveProduct(verifiedProduct, PRODUCT_MAP);
+
 
   // If loading is finished and we don't have a verified valid product, redirect to home
   React.useEffect(() => {
@@ -199,8 +202,8 @@ export default function ThankYou() {
           {/* Support Line — Priority 2: email from env via config */}
           <div style={{ fontSize: '14px', color: '#a0a0a0', fontFamily: 'Inter, sans-serif', marginBottom: 40 }}>
             Need help?{' '}
-            <a href={`mailto:${GLOBAL_CONFIG.supportEmail}`} style={{ color: '#D4AF37', textDecoration: 'underline' }}>
-              {GLOBAL_CONFIG.supportEmail}
+            <a href={`mailto:${globalSettings.supportEmail}`} style={{ color: '#D4AF37', textDecoration: 'underline' }}>
+              {globalSettings.supportEmail}
             </a>
           </div>
 
@@ -292,7 +295,7 @@ export default function ThankYou() {
         </div>
       </main>
 
-      <Footer instagramLink={GLOBAL_CONFIG.instagram} />
+      <Footer instagramLink={globalSettings.instagram} />
     </div>
   );
 }

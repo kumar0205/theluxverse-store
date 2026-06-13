@@ -1,20 +1,56 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
+import { auth } from '@/lib/firebase';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoadingAuth, setIsLoadingAuth] = useState(false);
+  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
   const [authError, setAuthError] = useState(null);
-  const [authChecked, setAuthChecked] = useState(true);
+  const [authChecked, setAuthChecked] = useState(false);
 
-  // Plug in your own auth logic here
-  const checkUserAuth = async () => {};
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((usr) => {
+      setUser(usr);
+      setIsAuthenticated(!!usr);
+      setAuthChecked(true);
+      setIsLoadingAuth(false);
+    });
+    return () => unsubscribe();
+  }, []);
 
-  const logout = () => {
-    setUser(null);
-    setIsAuthenticated(false);
+  const login = async (email, password) => {
+    setIsLoadingAuth(true);
+    setAuthError(null);
+    try {
+      const res = await auth.signInWithEmailAndPassword(email, password);
+      setUser(res.user);
+      setIsAuthenticated(true);
+      return res.user;
+    } catch (err) {
+      setAuthError(err);
+      throw err;
+    } finally {
+      setIsLoadingAuth(false);
+    }
+  };
+
+  const logout = async () => {
+    setIsLoadingAuth(true);
+    try {
+      await auth.signOut();
+      setUser(null);
+      setIsAuthenticated(false);
+    } catch (err) {
+      console.error('Logout error', err);
+    } finally {
+      setIsLoadingAuth(false);
+    }
+  };
+
+  const checkUserAuth = async () => {
+    // Already tracked in useEffect, no-op or re-evaluate
   };
 
   const navigateToLogin = () => {
@@ -29,6 +65,7 @@ export const AuthProvider = ({ children }) => {
       authError,
       authChecked,
       logout,
+      login,
       navigateToLogin,
       checkUserAuth,
     }}>
@@ -44,3 +81,4 @@ export const useAuth = () => {
   }
   return context;
 };
+

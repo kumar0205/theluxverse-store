@@ -8,6 +8,9 @@ import PrivacyPolicy from '@/pages/PrivacyPolicy';
 import TermsAndConditions from '@/pages/TermsAndConditions';
 import RefundPolicy from '@/pages/RefundPolicy';
 import Contact from '@/pages/Contact';
+import { AuthProvider } from '@/lib/AuthContext';
+import { DbProvider } from '@/config/DbContext';
+import ProtectedRoute from '@/components/ProtectedRoute';
 
 // Lazy load pages
 const Home = lazy(() => import('@/pages/Home'));
@@ -17,6 +20,8 @@ const VaultPage = lazy(() => import('@/pages/VaultPage'));
 const CreatorVault = lazy(() => import('@/pages/CreatorVault'));
 const FullVault = lazy(() => import('@/pages/FullVault'));
 const WhatIsDigitalProduct = lazy(() => import('@/pages/WhatIsDigitalProduct'));
+const Login = lazy(() => import('@/pages/Login'));
+const AdminDashboard = lazy(() => import('@/pages/AdminDashboard'));
 
 function SkeletonLoader() {
   return (
@@ -113,25 +118,36 @@ function SkeletonLoader() {
 function App() {
   return (
     <QueryClientProvider client={queryClientInstance}>
-      <Router>
-        <ScrollToTop />
-        <Suspense fallback={<SkeletonLoader />}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/thankyou" element={<ThankYou />} />
-            <Route path="/launchpad" element={<LaunchpadPage />} />
-            <Route path="/vault" element={<VaultPage />} />
-            <Route path="/creator-vault" element={<CreatorVault />} />
-            <Route path="/full-vault" element={<FullVault />} />
-            <Route path="/what-is-digital-product" element={<WhatIsDigitalProduct />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
-            <Route path="/refund-policy" element={<RefundPolicy />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="*" element={<Home />} />
-          </Routes>
-        </Suspense>
-      </Router>
+      <AuthProvider>
+        <DbProvider>
+          <Router>
+            <ScrollToTop />
+            <Suspense fallback={<SkeletonLoader />}>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                
+                {/* Protected Admin routes */}
+                <Route element={<ProtectedRoute />}>
+                  <Route path="/admin" element={<AdminDashboard />} />
+                </Route>
+
+                <Route path="/thankyou" element={<ThankYou />} />
+                <Route path="/launchpad" element={<LaunchpadPage />} />
+                <Route path="/vault" element={<VaultPage />} />
+                <Route path="/creator-vault" element={<CreatorVault />} />
+                <Route path="/full-vault" element={<FullVault />} />
+                <Route path="/what-is-digital-product" element={<WhatIsDigitalProduct />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+                <Route path="/refund-policy" element={<RefundPolicy />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="*" element={<Home />} />
+              </Routes>
+            </Suspense>
+          </Router>
+        </DbProvider>
+      </AuthProvider>
       <Toaster />
     </QueryClientProvider>
   );
